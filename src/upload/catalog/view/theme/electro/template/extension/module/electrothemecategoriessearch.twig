@@ -1,0 +1,64 @@
+<script>
+$(document).ready(function(){
+    var categories;
+    $.ajax();
+    function getSiteCategories(){
+        $.ajax({
+            url:"/index.php?route=extension/module/electrothemecategoriessearch/categories",
+            method:"GET",
+            success:function(data){
+                categories=data['categories'];
+                showSiteCategories(categories);
+            },
+            error:function(){
+                console.log("error");
+            }
+        });
+    }
+    function showSiteCategories(categories){
+        if (categories){
+            var searchbar=$(".header-search #input-select");
+            $(searchbar).children().remove();
+            
+            $("#search").prepend("<select class='input-select' style='z-index:9;border:none; width:150px'></select>");
+            var select=$("#search").find(".input-select");
+            $('#search-input').css({
+                'border-radius':0,
+                'width':'150px',
+                'z-index':0,
+                'padding-left':'10px',
+                'padding-right':'10px',
+
+            });
+            $('#search').css({
+                'display':'flex',
+                'justify-content':'center'
+            });
+
+            
+            $(select).append('<option value="0">All Categories</option>');
+            for (var i=0,len=categories.length;i<len;i++){
+                var category=categories[i];
+
+                var optionText='<option value="'+category["category_id"]+'">'+category["name"]+'</option>';
+                $(select).append(optionText);
+            }
+            $('.header-search .search-btn').on('click',function(event){
+                var parent=$(event.target).parent();
+                var select=$(parent).children("select");
+                var input=$(parent).children("input.input");
+
+                var category=$(select).val();
+                var query=$(input).val();
+
+                window.location="/index.php?route=extension/module/electrothemecategoriessearch/search&category="+category+"&query="+query;
+            });
+        } else {
+            console.log("no categories");
+        }
+        
+    }
+
+    getSiteCategories();
+});
+</script>
